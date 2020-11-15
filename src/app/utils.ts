@@ -33,3 +33,19 @@ export const generateRandomAbilities = (): string[] => {
   }
   return result;
 };
+
+export const isEmptyArray = (arr: any[]) => {
+  return arr.length === 0;
+};
+
+export const isArray = (val: any) => {
+  return Array.isArray(val);
+};
+
+export const isObject = (val: any) => {
+  return typeof val === 'object' && val !== null;
+};
+
+export const isEmptyObject = (val: object) => {
+  return Object.keys(val).length === 0;
+};
