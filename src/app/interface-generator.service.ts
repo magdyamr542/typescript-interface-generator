@@ -14,30 +14,32 @@ interface InterfaceEntityInterface {
   key: string;
   value: ValueTypes;
   overallTypeAsString: string;
-  childs?: InterfaceEntity[];
   kind: Kind;
+  childs?: InterfaceEntity[];
+  required?: boolean;
 }
 
 interface RequiredOrOptionalPropsInterface {
   [key: string]: {
     required: boolean;
-    val: any;
+    value: any;
   };
 }
 
 class InterfaceEntity implements InterfaceEntityInterface {
   key: string; // the key in the json
   value: ValueTypes; // the value which corrsponds to some key
-  _overallTypeAsString: string; // the parent tells me what my name should be if my type is object
-  childs?: InterfaceEntity[];
-  _isEmptyObject?: boolean = false;
   kind: Kind;
+  childs?: InterfaceEntity[];
+  _overallTypeAsString: string; // the parent tells me what my name should be if my type is object
+  _required: boolean;
 
   get overallTypeAsString() {
     return this._overallTypeAsString;
   }
 
-  constructor(key: string, value: ValueTypes) {
+  constructor(key: string, value: ValueTypes, required?: boolean) {
+    this._required = required === undefined ? true : required;
     this.key = key;
     this.value = value;
     this.childs = []; // if iam an object then i would have childs that will be generated in the build up proccess
@@ -65,17 +67,42 @@ class InterfaceEntity implements InterfaceEntityInterface {
     } else if (this.kind === Kind.ARRAY) {
       if (isEmptyArray(value as any[])) return;
       const firstItem = value[0];
-      if (isObject(firstItem) || isArray(firstItem)) {
-        const childs = this._generateChildsFromObject(key, firstItem as object);
+      if (isObject(firstItem)) {
+        const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
+          value as object[]
+        );
+        const entries = Object.entries(requiredAndOptionalProps);
+        const obj = entries.reduce((prev, curr) => {
+          return { ...prev, [curr[0]]: curr[1].value };
+        }, {});
+        const childs = this._generateChildsFromObject(
+          key,
+          obj,
+          requiredAndOptionalProps
+        );
         this.childs.push(...childs);
       }
     }
   }
-  private _generateChildsFromObject(key: string, value: object) {
+
+  private _generateChildsFromObject(
+    key: string,
+    value: object,
+    requiredAndOptionalProps?: RequiredOrOptionalPropsInterface
+  ) {
     const entries = Object.entries(value);
     const result: InterfaceEntity[] = [];
     for (const entry of entries) {
-      const child = new InterfaceEntity(entry[0], entry[1]);
+      let child;
+      if (requiredAndOptionalProps) {
+        child = new InterfaceEntity(
+          entry[0],
+          entry[1],
+          requiredAndOptionalProps[entry[0]].required
+        );
+      } else {
+        child = new InterfaceEntity(entry[0], entry[1], true);
+      }
       result.push(child);
     }
     return result;
@@ -85,29 +112,34 @@ class InterfaceEntity implements InterfaceEntityInterface {
     return new InterfaceEntity(key, value);
   }
 
-  // /* getting the required and optional props from an array of objects */
-  // private _getRequiredAndOptionalProps(objArr: object[]) {
-  //   const length = objArr.length;
-  //   const keyMap: { [key: string]: number } = {};
-  //   // tslint:disable-next-line: prefer-for-of
-  //   for (let i = 0; i < objArr.length; i++) {
-  //     const keys = Object.keys(objArr[i]);
-  //     for (const key of keys) {
-  //       if (keyMap[key]) keyMap[key]++;
-  //       else keyMap[key] = 1;
-  //     }
-  //   }
-  //   /* for each property check if it was in each and every single entry of the array */
-  //   const result: RequiredOrOptionalPropsInterface = {};
-  //   const keyMapEntries = Object.entries(keyMap);
-  //   for (const entry of keyMapEntries) {
-  //     result[entry[0]] = {
-  //       required: entry[1] === objArr.length,
-  //       val: this._getFirstValueTestFromArray(entry[0], objArr),
-  //     };
-  //   }
-  //   return result;
-  // }
+  /* getting the required and optional props from an array of objects */
+  private _getRequiredAndOptionalProps(objArr: object[]) {
+    const length = objArr.length;
+    const keyMap: { [key: string]: number } = {};
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < objArr.length; i++) {
+      const keys = Object.keys(objArr[i]);
+      for (const key of keys) {
+        if (keyMap[key]) keyMap[key]++;
+        else keyMap[key] = 1;
+      }
+    }
+    /* for each property check if it was in each and every single entry of the array */
+    const result: RequiredOrOptionalPropsInterface = {};
+    const keyMapEntries = Object.entries(keyMap);
+    for (const entry of keyMapEntries) {
+      result[entry[0]] = {
+        required: entry[1] === objArr.length,
+        value: this._getFirstValueFromobject(entry[0], objArr),
+      };
+    }
+    return result;
+  }
+  private _getFirstValueFromobject(key: string, arr: object[]) {
+    for (const obj of arr) {
+      if (obj[key]) return obj[key];
+    }
+  }
 
   private _generateOverallTypeAsString(value: ValueTypes): string {
     if (value === null) return 'null';
@@ -138,7 +170,9 @@ class InterfaceEntity implements InterfaceEntityInterface {
       this.key
     )} { \n`;
     for (const child of this.childs) {
-      result += `${child.key} : ${child.overallTypeAsString}; \n`;
+      result += `${child._required ? child.key : child.key + '?'} : ${
+        child.overallTypeAsString
+      }; \n`;
       /* append new defs because we have a new interface */
       if (child.childs.length !== 0 || child.kind === Kind.OBJECT) {
         child._getTypeDefinitionsArray(defs);
