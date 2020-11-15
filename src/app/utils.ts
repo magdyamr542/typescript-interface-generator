@@ -49,3 +49,23 @@ export const isObject = (val: any) => {
 export const isEmptyObject = (val: object) => {
   return Object.keys(val).length === 0;
 };
+
+export const extractFirstArray = (value: any[]) => {
+  while (isArray(value)) {
+    if (isObject(value[0]) && !isArray(value[0])) return value;
+    value = value[0];
+  }
+  return value;
+};
+
+export const extractFirstArrayMember = (value: any[]): any | null => {
+  while (isArray(value)) {
+    if (value.length === 0) return null;
+    value = value[0];
+  }
+  return value as any;
+};
+
+export const isNotNullOrUndefined = (val: any) => {
+  return val !== null && val !== undefined;
+};

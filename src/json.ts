@@ -1,6 +1,12 @@
 export const json = {
-  name: [
-    { name: 'amr', age: 12 },
-    { howAreYou: 'this is the main name', name: 'some other name' },
+  _id: 1,
+  name: { first: 'John', last: 'Backus' },
+  contribs: [
+    [
+      [
+        { name: 'amr', age: 12 },
+        { name: 'dsf', married: false },
+      ],
+    ],
   ],
 };

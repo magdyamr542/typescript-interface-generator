@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { json } from 'src/json';
-import { isArray, isEmptyArray, isObject } from './utils';
+import {
+  extractFirstArray,
+  extractFirstArrayMember,
+  isArray,
+  isEmptyArray,
+  isNotNullOrUndefined,
+  isObject,
+} from './utils';
 
 type LimitedJsonValueTypes = string | number | boolean;
 type ValueTypes = LimitedJsonValueTypes | object | null;
@@ -9,7 +16,6 @@ enum Kind {
   ARRAY,
   OBJECT,
 }
-
 interface InterfaceEntityInterface {
   key: string;
   value: ValueTypes;
@@ -18,7 +24,6 @@ interface InterfaceEntityInterface {
   childs?: InterfaceEntity[];
   required?: boolean;
 }
-
 interface RequiredOrOptionalPropsInterface {
   [key: string]: {
     required: boolean;
@@ -66,10 +71,11 @@ class InterfaceEntity implements InterfaceEntityInterface {
       this.childs.push(...childs);
     } else if (this.kind === Kind.ARRAY) {
       if (isEmptyArray(value as any[])) return;
-      const firstItem = value[0];
+      const firstItem = extractFirstArrayMember(value as any[]);
       if (isObject(firstItem)) {
+        const arrayWithObjects = extractFirstArray(value as any[]);
         const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
-          value as object[]
+          arrayWithObjects as object[]
         );
         const entries = Object.entries(requiredAndOptionalProps);
         const obj = entries.reduce((prev, curr) => {
@@ -120,7 +126,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
     for (let i = 0; i < objArr.length; i++) {
       const keys = Object.keys(objArr[i]);
       for (const key of keys) {
-        if (keyMap[key]) keyMap[key]++;
+        if (isNotNullOrUndefined(keyMap[key])) keyMap[key]++;
         else keyMap[key] = 1;
       }
     }
@@ -137,7 +143,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
   }
   private _getFirstValueFromobject(key: string, arr: object[]) {
     for (const obj of arr) {
-      if (obj[key]) return obj[key];
+      if (isNotNullOrUndefined(obj[key])) return obj[key];
     }
   }
 
