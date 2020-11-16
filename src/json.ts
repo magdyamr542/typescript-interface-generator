@@ -4,26 +4,10 @@ export const json = {
   contribs: [
     [
       [
-        { name: 'amr', age: 12 },
-        { name: 'dsf', married: false },
+        { name: 'amr', age: 12, ort: { obj: [] } },
+        { name: 'dsf', married: false, age: 12 },
       ],
     ],
   ],
-  fourDimsArray: [
-    [
-      [
-        [
-          {
-            firstKey: 'sfd',
-            secondKey: 12,
-            thirdKey: false,
-            fourthKey: {},
-            fifthKey: undefined,
-            sechsKey: null,
-            seventhKey: [],
-          },
-        ],
-      ],
-    ],
-  ],
+  fourDimsArray: [[[[[]]]]],
 };

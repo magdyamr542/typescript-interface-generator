@@ -77,3 +77,14 @@ export const isNull = (val: any) => {
 export const isUndefined = (val: any) => {
   return val === undefined;
 };
+
+export const getFirstValueFromobject = (key: string, arr: object[]) => {
+  for (const obj of arr) {
+    if (isNotNullOrUndefined(obj[key])) return obj[key];
+  }
+  for (const obj of arr) {
+    if (isNull(obj[key])) return null;
+    // tslint:disable-next-line: no-unused-expression
+    else if (isUndefined(obj[key])) undefined;
+  }
+};

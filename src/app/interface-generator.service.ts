@@ -7,8 +7,7 @@ import {
   isEmptyArray,
   isNotNullOrUndefined,
   isObject,
-  isNull,
-  isUndefined,
+  getFirstValueFromobject,
 } from './utils';
 
 /* TYPES DEFINITION */
@@ -69,6 +68,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
     }
   }
 
+  // processing the object and generating the child of the current key value pair
   private _processObject(key: string, value: ValueTypes) {
     if (this.kind === Kind.OBJECT) {
       const childs = this._generateChildsFromObject(key, value as object);
@@ -76,16 +76,14 @@ class InterfaceEntity implements InterfaceEntityInterface {
     } else if (this.kind === Kind.ARRAY) {
       if (isEmptyArray(value as any[])) return;
       const firstItem = extractFirstArrayMember(value as any[]);
-
       if (isObject(firstItem)) {
         const arrayWithObjects = extractFirstArray(value as any[]);
         const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
           arrayWithObjects as object[]
         );
-        const entries = Object.entries(requiredAndOptionalProps);
-        const obj = entries.reduce((prev, curr) => {
-          return { ...prev, [curr[0]]: curr[1].value };
-        }, {});
+        const obj = this._getRequiredAndOptionalPropsAsJsobObject(
+          requiredAndOptionalProps
+        );
         const childs = this._generateChildsFromObject(
           key,
           obj,
@@ -94,6 +92,16 @@ class InterfaceEntity implements InterfaceEntityInterface {
         this.childs.push(...childs);
       }
     }
+  }
+
+  private _getRequiredAndOptionalPropsAsJsobObject(
+    val: RequiredOrOptionalPropsInterface
+  ) {
+    const entries = Object.entries(val);
+    const obj = entries.reduce((prev, curr) => {
+      return { ...prev, [curr[0]]: curr[1].value };
+    }, {});
+    return obj;
   }
 
   private _generateChildsFromObject(
@@ -137,24 +145,13 @@ class InterfaceEntity implements InterfaceEntityInterface {
     for (const entry of keyMapEntries) {
       result[entry[0]] = {
         required: entry[1] === objArr.length,
-        value: this._getFirstValueFromobject(entry[0], objArr),
+        value: getFirstValueFromobject(entry[0], objArr),
       };
     }
-    console.log('result is req and opt', result);
     return result;
   }
-  private _getFirstValueFromobject(key: string, arr: object[]) {
-    for (const obj of arr) {
-      if (isNotNullOrUndefined(obj[key])) return obj[key];
-    }
 
-    for (const obj of arr) {
-      if (isNull(obj[key])) return null;
-      // tslint:disable-next-line: no-unused-expression
-      else if (isUndefined(obj[key])) undefined;
-    }
-  }
-
+  /* recursive util to generate the overall type of the object */
   private _generateOverallTypeAsString(value: ValueTypes): string {
     if (value === null) return 'null';
     if (isArray(value)) {
@@ -171,22 +168,27 @@ class InterfaceEntity implements InterfaceEntityInterface {
     return key.charAt(0).toUpperCase() + key.substring(1) + 'Interface';
   }
 
+  /* recursive util to get the type definition from the current json object */
   getTypeDefinition() {
     const defs: string[] = [];
     this._getTypeDefinitionsArray(defs);
     return defs.join('\n\n');
   }
 
+  _generateNameFromPriority(key: string, required: boolean) {
+    return required ? key : key + '?';
+  }
+
   private async _getTypeDefinitionsArray(defs: string[]) {
     /* this is an object which is an interface */
     let result = '';
-    result += `export interface ${this._generateTypeNameFromKey(
-      this.key
-    )} { \n`;
+    const nameFromKey = this._generateTypeNameFromKey(this.key);
+    result += `export interface ${nameFromKey} { \n`;
     for (const child of this.childs) {
-      result += `${child._required ? child.key : child.key + '?'} : ${
-        child.overallTypeAsString
-      }; \n`;
+      result += `${this._generateNameFromPriority(
+        child.key,
+        child._required
+      )} : ${child.overallTypeAsString}; \n`;
       /* append new defs because we have a new interface */
       if (child.childs.length !== 0 || child.kind === Kind.OBJECT) {
         child._getTypeDefinitionsArray(defs);
