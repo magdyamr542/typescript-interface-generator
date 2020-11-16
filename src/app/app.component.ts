@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { json } from 'src/json';
 import { InterfaceGeneratorService } from './interface-generator.service';
 import { syntaxHighlight } from './utils';
 
@@ -18,8 +17,8 @@ export class AppComponent {
   @ViewChild('jsonInput') jsonInput;
 
   generateInterface() {
-    const jsonString = this.jsonInput.nativeElement.value;
-    const jsonParsed = JSON.parse(jsonString);
+    const jsonString: string = this.jsonInput.nativeElement.value;
+    const jsonParsed = JSON.parse(jsonString.replace(' ', ''));
     this.json = syntaxHighlight(JSON.stringify(jsonParsed, null, 2));
     this.interface = this.interfaceGeneratorService.generateInterface(
       jsonParsed
