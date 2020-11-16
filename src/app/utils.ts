@@ -67,5 +67,13 @@ export const extractFirstArrayMember = (value: any[]): any | null => {
 };
 
 export const isNotNullOrUndefined = (val: any) => {
-  return val !== null && val !== undefined;
+  return !isNull(val) && !isUndefined(val);
+};
+
+export const isNull = (val: any) => {
+  return val === null;
+};
+
+export const isUndefined = (val: any) => {
+  return val === undefined;
 };

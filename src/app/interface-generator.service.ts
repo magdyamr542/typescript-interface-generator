@@ -7,8 +7,11 @@ import {
   isEmptyArray,
   isNotNullOrUndefined,
   isObject,
+  isNull,
+  isUndefined,
 } from './utils';
 
+/* TYPES DEFINITION */
 type LimitedJsonValueTypes = string | number | boolean;
 type ValueTypes = LimitedJsonValueTypes | object | null;
 enum Kind {
@@ -31,6 +34,7 @@ interface RequiredOrOptionalPropsInterface {
   };
 }
 
+/* THE MAIN SERVICE */
 class InterfaceEntity implements InterfaceEntityInterface {
   key: string; // the key in the json
   value: ValueTypes; // the value which corrsponds to some key
@@ -72,6 +76,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
     } else if (this.kind === Kind.ARRAY) {
       if (isEmptyArray(value as any[])) return;
       const firstItem = extractFirstArrayMember(value as any[]);
+
       if (isObject(firstItem)) {
         const arrayWithObjects = extractFirstArray(value as any[]);
         const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
@@ -114,10 +119,6 @@ class InterfaceEntity implements InterfaceEntityInterface {
     return result;
   }
 
-  private _generateChildSimple(key: string, value: ValueTypes) {
-    return new InterfaceEntity(key, value);
-  }
-
   /* getting the required and optional props from an array of objects */
   private _getRequiredAndOptionalProps(objArr: object[]) {
     const length = objArr.length;
@@ -139,11 +140,18 @@ class InterfaceEntity implements InterfaceEntityInterface {
         value: this._getFirstValueFromobject(entry[0], objArr),
       };
     }
+    console.log('result is req and opt', result);
     return result;
   }
   private _getFirstValueFromobject(key: string, arr: object[]) {
     for (const obj of arr) {
       if (isNotNullOrUndefined(obj[key])) return obj[key];
+    }
+
+    for (const obj of arr) {
+      if (isNull(obj[key])) return null;
+      // tslint:disable-next-line: no-unused-expression
+      else if (isUndefined(obj[key])) undefined;
     }
   }
 

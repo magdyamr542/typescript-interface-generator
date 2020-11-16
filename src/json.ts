@@ -9,4 +9,21 @@ export const json = {
       ],
     ],
   ],
+  fourDimsArray: [
+    [
+      [
+        [
+          {
+            firstKey: 'sfd',
+            secondKey: 12,
+            thirdKey: false,
+            fourthKey: {},
+            fifthKey: undefined,
+            sechsKey: null,
+            seventhKey: [],
+          },
+        ],
+      ],
+    ],
+  ],
 };
