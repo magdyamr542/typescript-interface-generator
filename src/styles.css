@@ -1,16 +1,60 @@
 /* You can add global styles to this file, and also import other style files */
-.json-pre {
-    font-size: 24px;
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
 }
+
+textarea {
+    display: block;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    padding: 0px;
+    margin: 0px   ;
+}
+
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: 0px 80px;
+    padding: 20px 100px;
+    grid-gap: 20px;
 }
 
-pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-.string { color: green; }
+.section {
+    outline: 1px solid #ccc;
+    padding: 5px;
+     margin: 5px;
+}
+
+pre {
+    padding-left: 30px;
+    font-size: 20px;
+}
+
+.string {color: green;}
 .number { color: darkorange; }
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
+
+
+.btn {
+    text-transform: uppercase;    
+    padding: 20px;
+    border-radius: 10px;
+    display: block;
+    cursor: pointer;
+    font-size: 20px;
+    margin: auto;
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+    }
+
+.btn:hover {
+    background: #60a3bc;
+    color: white;
+}

@@ -1,13 +1,28 @@
 export const json = {
-  _id: 1,
-  name: { first: 'John', last: 'Backus' },
-  contribs: [
+  name: 'bob',
+  age: 12,
+  married: false,
+  working: true,
+  hobbies: ['running', 'grilling'],
+  available: null,
+  favouriteLaptop: {
+    lapName: 'mac',
+    lapPreis: 1200,
+    lapColor: 'grey',
+    lapData: {
+      cpu: '1.2Ghz',
+      storage: 255,
+    },
+  },
+  gridData: [
     [
-      [
-        { name: 'amr', age: 12, ort: { obj: [] } },
-        { name: 'dsf', married: false, age: 12 },
-      ],
+      { x: 1, y: 2 },
+      { x: 2, y: 3 },
     ],
   ],
-  fourDimsArray: [[[[[]]]]],
+  gridDataWithOptionalParams: [
+    { x: 1, y: 2 },
+    { x: 1, y: 2, z: 3 },
+    { x: 1, y: 2, z: 3, f: 12 },
+  ],
 };

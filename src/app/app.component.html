@@ -1,7 +1,30 @@
-<h1>Interface Generator:</h1>
+<h1 class="title">Interface Generator:</h1>
+<div class="button-container">
+  <button class="btn" (click)="generateInterface()">Generate Interface</button>
+</div>
 <div class="grid">
-  <pre class="json-pre" [innerHTML]="json"></pre>
-  <pre class="json-pre">{{ interface }}</pre>
+  <!-- the input -->
+  <div class="input-section section">
+    <textarea
+      name="json_input"
+      cols="30"
+      rows="30"
+      placeholder="Enter your json input here..."
+      #jsonInput
+    ></textarea>
+  </div>
+
+  <!-- overview with coloring -->
+  <div class="display-section section">
+    <h2>JSON</h2>
+    <pre class="json-pre" [innerHTML]="json"></pre>
+  </div>
+
+  <!-- interface output -->
+  <div class="output-section section">
+    <h2>Interface</h2>
+    <pre class="json-pre">{{ interface }}</pre>
+  </div>
 </div>
 
 <router-outlet></router-outlet>
