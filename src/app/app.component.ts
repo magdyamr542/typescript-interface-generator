@@ -18,11 +18,15 @@ export class AppComponent {
   @ViewChild('jsonInput') jsonInput;
 
   generateInterface() {
-    const jsonString: string = this.jsonInput.nativeElement.value;
+    const textArea = this.jsonInput.nativeElement as HTMLTextAreaElement;
+    const jsonString: string = textArea.value;
     let jsonParsed: object;
     try {
       jsonParsed = JSON.parse(jsonString.replace(' ', ''));
+      // show the json in the text area and the json area
       this.json = syntaxHighlight(JSON.stringify(jsonParsed, null, 2));
+      textArea.value = JSON.stringify(jsonParsed, null, 2);
+      // compute and show the interfaces
       this.interface = this.interfaceGeneratorService.generateInterface(
         jsonParsed
       );

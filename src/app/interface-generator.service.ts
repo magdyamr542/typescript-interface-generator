@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { json } from 'src/json';
+import { WHITE_SPACE } from './consts';
 import {
   extractFirstArray,
   extractFirstArrayMember,
@@ -176,7 +177,11 @@ class InterfaceEntity implements InterfaceEntityInterface {
   }
 
   _generateNameFromPriority(key: string, required: boolean) {
-    return required ? key : key + '?';
+    let result = key;
+    if (result.indexOf(WHITE_SPACE) > -1) {
+      result = key.replace(WHITE_SPACE, '');
+    }
+    return required ? result : result + '?';
   }
 
   private async _getTypeDefinitionsArray(defs: string[]) {
@@ -207,10 +212,9 @@ export class InterfaceGeneratorService {
   constructor() {
     this.generateInterface(json);
   }
-  generateInterface(json: object) {
-    const root: InterfaceEntity = new InterfaceEntity('Root', json);
+  generateInterface(jsonObj: object) {
+    const root: InterfaceEntity = new InterfaceEntity('Root', jsonObj);
     const result = root.getTypeDefinition();
-    console.log(root, result);
     return result;
   }
 }
