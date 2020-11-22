@@ -205,11 +205,12 @@ class InterfaceEntity implements InterfaceEntityInterface {
 })
 export class InterfaceGeneratorService {
   constructor() {
-    console.log(this.generateInterface(json));
+    this.generateInterface(json);
   }
   generateInterface(json: object) {
     const root: InterfaceEntity = new InterfaceEntity('Root', json);
-    console.log(root);
-    return root.getTypeDefinition();
+    const result = root.getTypeDefinition();
+    console.log(root, result);
+    return result;
   }
 }

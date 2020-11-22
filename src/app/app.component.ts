@@ -13,15 +13,29 @@ export class AppComponent {
   ) {}
   title = 'angular';
   json = 'empty...';
+  showErrorMsg = false;
   interface = 'empty...';
   @ViewChild('jsonInput') jsonInput;
 
   generateInterface() {
     const jsonString: string = this.jsonInput.nativeElement.value;
-    const jsonParsed = JSON.parse(jsonString.replace(' ', ''));
-    this.json = syntaxHighlight(JSON.stringify(jsonParsed, null, 2));
-    this.interface = this.interfaceGeneratorService.generateInterface(
-      jsonParsed
-    );
+    let jsonParsed: object;
+    try {
+      jsonParsed = JSON.parse(jsonString.replace(' ', ''));
+      this.json = syntaxHighlight(JSON.stringify(jsonParsed, null, 2));
+      this.interface = this.interfaceGeneratorService.generateInterface(
+        jsonParsed
+      );
+    } catch (error) {
+      this._showErrorMsg();
+    }
+  }
+
+  /* Showing the error msg for 3 Seconds */
+  _showErrorMsg() {
+    this.showErrorMsg = true;
+    setTimeout(() => {
+      this.showErrorMsg = false;
+    }, 3000);
   }
 }

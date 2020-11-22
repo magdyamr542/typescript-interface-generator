@@ -3,6 +3,7 @@ export const json = {
   age: 12,
   married: false,
   working: true,
+  carType: null,
   hobbies: ['running', 'grilling'],
   available: null,
   favouriteLaptop: {

@@ -58,3 +58,19 @@ pre {
     background: #60a3bc;
     color: white;
 }
+
+.error-msg {
+    color: red;
+    margin: auto;
+    text-align: center;
+    font-size: 18px;
+}
+
+.error-msg-show {
+display: block;
+}
+
+.error-msg-hide {
+display: none;
+}
+

@@ -2,6 +2,16 @@
 <div class="button-container">
   <button class="btn" (click)="generateInterface()">Generate Interface</button>
 </div>
+
+<!-- Display an error if failed to parse the json -->
+<div
+  class="error-msg"
+  [ngClass]="showErrorMsg ? 'error-msg-show' : 'error-msg-hide'"
+>
+  <p>Please insert a valid Json!</p>
+</div>
+
+<!-- The main Grid -->
 <div class="grid">
   <!-- the input -->
   <div class="input-section section">
