@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { jsonSamples } from 'src/json';
 import { InterfaceGeneratorService } from './interface-generator.service';
 import { syntaxHighlight } from './utils';
 
@@ -14,6 +15,7 @@ export class AppComponent {
   title = 'angular';
   json = 'empty...';
   showErrorMsg = false;
+  showCopyMsg = false;
   interface = 'empty...';
   @ViewChild('jsonInput') jsonInput;
 
@@ -42,4 +44,26 @@ export class AppComponent {
       this.showErrorMsg = false;
     }, 3000);
   }
+
+
+
+  /* Showing the error msg for 3 Seconds */
+  _showCopyMsg() {
+    this.showCopyMsg = true;
+    setTimeout(() => {
+      this.showCopyMsg = false;
+    }, 3000);
+  }
+
+
+  _copyJsonToClipboard(index:number){
+    const json = jsonSamples[index];
+  navigator.clipboard.writeText(json).then(() => {
+    console.log('Async: Copying to clipboard was successful!');
+    this._showCopyMsg();
+  }).catch(() => {
+    console.log('Async: Could not copy to the clipboard!')
+  })
+}
+  
 }

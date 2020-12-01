@@ -11,6 +11,20 @@
   <p>Please insert a valid Json!</p>
 </div>
 
+
+<div
+  class="success-msg"
+  [ngClass]="showCopyMsg ? 'copy-msg-show' : 'copy-msg-hide'"
+>
+  <p>Json Copied Successfully</p>
+</div>
+
+  <div class="jsonCopyConteiner">
+    <button class="btn btn-inline" (click)="_copyJsonToClipboard(0)"> json1</button>
+    <button class="btn btn-inline" (click)="_copyJsonToClipboard(1)"> json2</button>
+    <button class="btn btn-inline" (click)="_copyJsonToClipboard(2)" > json3</button>
+</div>
+
 <!-- The main Grid -->
 <div class="grid">
   <!-- the input -->

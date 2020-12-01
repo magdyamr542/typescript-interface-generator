@@ -66,6 +66,14 @@ pre {
     font-size: 18px;
 }
 
+
+.success-msg {
+    color: green;
+    margin: auto;
+    text-align: center;
+    font-size: 18px;
+}
+
 .error-msg-show {
 display: block;
 }
@@ -73,4 +81,25 @@ display: block;
 .error-msg-hide {
 display: none;
 }
+
+
+.copy-msg-show {
+    display: block;
+    }
+    
+    .copy-msg-hide {
+    display: none;
+    }
+
+
+.jsonCopyConteiner {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    }
+    
+    .btn-inline {
+        display: inline-block;
+        margin: 0px 50px;
+    }
 
