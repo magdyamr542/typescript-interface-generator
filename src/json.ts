@@ -1,33 +1,32 @@
 export const json = {
-  "name": 'bob',
-  "age": 12,
-  "married": false,
-  "working": true,
-  "carType": null,
-  "hobbies": ['running', 'grilling'],
-  "available": null,
-  "favouriteLaptop": {
-    "lapName": 'mac',
-    "lapPreis": 1200,
-    "lapColor": 'grey',
-    "lapData": {
-      "cpu": '1.2Ghz',
-      "storage": 255,
+  name: 'bob',
+  age: 12,
+  married: false,
+  working: true,
+  carType: null,
+  hobbies: ['running', 'grilling'],
+  available: null,
+  favouriteLaptop: {
+    lapName: 'mac',
+    lapPreis: 1200,
+    lapColor: 'grey',
+    lapData: {
+      cpu: '1.2Ghz',
+      storage: 255,
     },
   },
-  "gridData": [
+  gridData: [
     [
       { x: 1, y: 2 },
       { x: 2, y: 3 },
     ],
   ],
-  "gridDataWithOptionalParams": [
+  gridDataWithOptionalParams: [
     { x: 1, y: 2 },
     { x: 1, y: 2, z: 3 },
     { x: 1, y: 2, z: 3, f: 12 },
   ],
 };
-
 
 const firstJson = `{
   "quiz": {
@@ -68,8 +67,7 @@ const firstJson = `{
   }
 }`;
 
-
- const secondJson = `{"menu": {
+const secondJson = `{"menu": {
   "id": "file",
   "value": "File",
   "popup": {
@@ -81,33 +79,41 @@ const firstJson = `{
   }
 }}`;
 
- const thirdJson = `{
-  "name": 'bob',
-  "age": 12,
-  "married": false,
-  "working": true,
-  "carType": null,
-  "hobbies": ['running', 'grilling'],
-  "available": null,
-  "favouriteLaptop": {
-    "lapName": 'mac',
-    "lapPreis": 1200,
-    "lapColor": 'grey',
-    "lapData": {
-      "cpu": '1.2Ghz',
-      "storage": 255,
-    },
-  },
-  "gridData": [
-    [
-      { "x": 1, "y": 2 },
-      { "x": 2, "y": 3 },
-    ],
-  ],
-  "gridDataWithOptionalParams": [
-    { "x": 1, "y": 2 },
-    { "x": 1, "y": 2, "z": 3 },
-    { "x": 1, "y": 2, "z": 3, "f": 12 },
-  ],
-}`;
-export const jsonSamples = [firstJson , secondJson , thirdJson];
+const thirdJson = `{
+  "problems": [{
+      "Diabetes":[{
+          "medications":[{
+              "medicationsClasses":[{
+                  "className":[{
+                      "associatedDrug":[{
+                          "name":"asprin",
+                          "dose":"",
+                          "strength":"500 mg"
+                      }],
+                      "associatedDrug#2":[{
+                          "name":"somethingElse",
+                          "dose":"",
+                          "strength":"500 mg"
+                      }]
+                  }],
+                  "className2":[{
+                      "associatedDrug":[{
+                          "name":"asprin",
+                          "dose":"",
+                          "strength":"500 mg"
+                      }],
+                      "associatedDrug#2":[{
+                          "name":"somethingElse",
+                          "dose":"",
+                          "strength":"500 mg"
+                      }]
+                  }]
+              }]
+          }],
+          "labs":[{
+              "missing_field": "missing_value"
+          }]
+      }],
+      "Asthma":[{}]
+  }]}`;
+export const jsonSamples = [firstJson, secondJson, thirdJson];
