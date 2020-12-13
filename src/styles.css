@@ -17,17 +17,22 @@ textarea {
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     margin: 0px 80px;
     padding: 20px;
     grid-gap: 20px;
 }
-
 .section {
     outline: 1px solid #ccc;
     padding: 5px;
      margin: 5px;
 }
+
+
+.input-section{
+    margin: 0px 200px;
+}
+
 
 pre {
     padding-left: 30px;
