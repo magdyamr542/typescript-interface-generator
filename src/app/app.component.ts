@@ -11,7 +11,8 @@ import { syntaxHighlight } from './utils';
 export class AppComponent {
   constructor(
     private readonly interfaceGeneratorService: InterfaceGeneratorService
-  ) {}
+  ) {
+  }
   title = 'angular';
   json = 'empty...';
   showErrorMsg = false;
