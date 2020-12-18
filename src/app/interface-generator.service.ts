@@ -26,6 +26,7 @@ interface InterfaceEntityInterface {
   childs?: InterfaceEntity[];
   required?: boolean;
 }
+
 interface RequiredOrOptionalPropsInterface {
   [key: string]: {
     required: boolean;
@@ -39,11 +40,30 @@ class InterfaceEntity implements InterfaceEntityInterface {
   value: ValueTypes; // the value which corrsponds to some key
   kind: Kind;
   childs?: InterfaceEntity[];
+  _parent: InterfaceEntity | null = null;
   _overallTypeAsString: string; // the parent tells me what my name should be if my type is object
   _required: boolean;
   _entityContainer?: InterfaceEntity[];
   _depth: number = 0;
   _duplicate: number = 0;
+
+  constructor(
+    key: string,
+    value: ValueTypes,
+    parent: InterfaceEntity,
+    required?: boolean
+  ) {
+    this._required = required === undefined ? true : required;
+    this.key = key;
+    this.value = value;
+    this.childs = []; // if iam an object then i would have childs that will be generated in the build up proccess
+    this._parent = parent;
+    /* generate the type of this prop if it is simple */
+    this._setConfig(value);
+    this._checkForDuplicates(key);
+    this._overallTypeAsString = this._generateOverallTypeAsString(value);
+    this._processObject(key, value); // process the current json and generate its children in the graph
+  }
 
   get overallTypeAsString() {
     let brackets = '';
@@ -56,28 +76,9 @@ class InterfaceEntity implements InterfaceEntityInterface {
     return this._generateTypeFromKeyHelper() + brackets;
   }
 
-  constructor(
-    key: string,
-    value: ValueTypes,
-    required?: boolean,
-    entityContainer?: InterfaceEntity[]
-  ) {
-    this._required = required === undefined ? true : required;
-    this._entityContainer = entityContainer ? entityContainer : [];
-    this.key = key;
-    this.value = value;
-    this.childs = []; // if iam an object then i would have childs that will be generated in the build up proccess
-    /* generate the type of this prop if it is simple */
-    this._setConfig(value);
-    this._checkForDuplicates(key);
-    this._overallTypeAsString = this._generateOverallTypeAsString(value);
-    this._processObject(key, value);
-    this._entityContainer.push(this);
-  }
-
   /* Checking if the name is a duplicate */
   private _checkForDuplicates(key: string) {
-    const sameEntities = this._entityContainer.filter(
+    const sameEntities = this._getRoot()._entityContainer.filter(
       (entity) => entity.key === key
     );
     this._duplicate = sameEntities.length;
@@ -93,6 +94,28 @@ class InterfaceEntity implements InterfaceEntityInterface {
     } else {
       this.kind = Kind.NORMAL;
     }
+    this._setEntityContainer();
+  }
+
+  /* Setting the Entity Container of the root */
+  private _setEntityContainer() {
+    if (this._isRoot()) {
+      this._entityContainer = [];
+    } else {
+      this._getRoot()._entityContainer.push(this);
+    }
+  }
+
+  private _getRoot() {
+    let root: InterfaceEntity = this;
+    while (root._parent !== null) {
+      root = root._parent;
+    }
+    return root;
+  }
+
+  private _isRoot() {
+    return this.key === 'Root';
   }
 
   // processing the object and generating the child of the current key value pair
@@ -139,21 +162,16 @@ class InterfaceEntity implements InterfaceEntityInterface {
     const entries = Object.entries(value);
     const result: InterfaceEntity[] = [];
     for (const entry of entries) {
-      let child;
+      let child: InterfaceEntity;
       if (requiredAndOptionalProps) {
         child = new InterfaceEntity(
           entry[0],
           entry[1],
-          requiredAndOptionalProps[entry[0]].required,
-          this._entityContainer
+          this,
+          requiredAndOptionalProps[entry[0]].required
         );
       } else {
-        child = new InterfaceEntity(
-          entry[0],
-          entry[1],
-          true,
-          this._entityContainer
-        );
+        child = new InterfaceEntity(entry[0], entry[1], this, true);
       }
       result.push(child);
     }
@@ -185,17 +203,13 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   /* recursive util to generate the overall type of the object */
   private _generateOverallTypeAsString(value: ValueTypes): string {
-    return this._generateInitialOverallTypeAsString(value);
-  }
-
-  _generateInitialOverallTypeAsString(value: ValueTypes) {
     if (value === null) return 'null';
-    if (isArray(value)) {
+    else if (isObject(value)) {
+      return this._generateTypeNameFromKey(this.key);
+    } else if (isArray(value)) {
       if (isEmptyArray(value as any[])) return 'any';
       const firstItem = extractFirstArrayMember(value as any[]);
-      return this._generateInitialOverallTypeAsString(firstItem);
-    } else if (isObject(value)) {
-      return this._generateTypeNameFromKey(this.key);
+      return this._generateOverallTypeAsString(firstItem);
     } else {
       return typeof value;
     }
@@ -210,8 +224,8 @@ class InterfaceEntity implements InterfaceEntityInterface {
     }
   }
 
+  /* Generate the name from the key in the Json. menu => Menu */
   private _generateTypeNameFromKey(key: string): string {
-    // make sure that the name is unique
     return key.charAt(0).toUpperCase() + key.substring(1);
   }
 
@@ -257,7 +271,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
 export class InterfaceGeneratorService {
   constructor() {}
   generateInterface(jsonObj: object) {
-    const root: InterfaceEntity = new InterfaceEntity('Root', jsonObj);
+    const root: InterfaceEntity = new InterfaceEntity('Root', jsonObj, null);
     const result = root.getTypeDefinition();
     console.log(root);
     return result;
