@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { json } from 'src/json';
-import { WHITE_SPACE } from './consts';
 import {
   extractFirstArray,
   extractFirstArrayMember,

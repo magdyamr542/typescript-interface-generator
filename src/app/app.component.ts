@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, ViewChild } from '@angular/core';
 import { jsonSamples } from 'src/json';
 import { InterfaceGeneratorService } from './interface-generator.service';
 import { syntaxHighlight } from './utils';
@@ -11,13 +11,16 @@ import { syntaxHighlight } from './utils';
 export class AppComponent {
   constructor(
     private readonly interfaceGeneratorService: InterfaceGeneratorService
-  ) {}
+  ) {
+    this.onTextCopy.subscribe((text) => this._insertTextToTextArea(text));
+  }
   title = 'angular';
   json = 'empty...';
   showErrorMsg = false;
   showCopyMsg = false;
   interface = 'empty...';
   @ViewChild('jsonInput') jsonInput;
+  onTextCopy: EventEmitter<string> = new EventEmitter();
 
   generateInterface() {
     const textArea = this.jsonInput.nativeElement as HTMLTextAreaElement;
@@ -36,7 +39,11 @@ export class AppComponent {
       this._showErrorMsg();
     }
   }
-
+  /* Inserting the copied text to the text area */
+  _insertTextToTextArea(text: string) {
+    const textArea = this.jsonInput.nativeElement as HTMLTextAreaElement;
+    textArea.value = text;
+  }
   /* Showing the error msg for 3 Seconds */
   _showErrorMsg() {
     this.showErrorMsg = true;
@@ -59,6 +66,7 @@ export class AppComponent {
       .writeText(json)
       .then(() => {
         console.log('Async: Copying to clipboard was successful!');
+        this.onTextCopy.emit(json);
         this._showCopyMsg();
       })
       .catch(() => {
