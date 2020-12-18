@@ -31,7 +31,8 @@ export const json = {
 const firstJson = `{
   "quiz": {
       "sport": {
-          "question": {
+          "q1": [{
+            "isImportant" : false,
               "question": "Which one is correct team name in NBA?",
               "options": [
                   "New York Bulls",
@@ -40,7 +41,7 @@ const firstJson = `{
                   "Huston Rocket"
               ],
               "answer": "Huston Rocket"
-          }
+          }]
       },
       "maths": {
           "q1": {

@@ -11,8 +11,7 @@ import { syntaxHighlight } from './utils';
 export class AppComponent {
   constructor(
     private readonly interfaceGeneratorService: InterfaceGeneratorService
-  ) {
-  }
+  ) {}
   title = 'angular';
   json = 'empty...';
   showErrorMsg = false;
@@ -46,8 +45,6 @@ export class AppComponent {
     }, 3000);
   }
 
-
-
   /* Showing the error msg for 3 Seconds */
   _showCopyMsg() {
     this.showCopyMsg = true;
@@ -56,15 +53,16 @@ export class AppComponent {
     }, 3000);
   }
 
-
-  _copyJsonToClipboard(index:number){
+  _copyJsonToClipboard(index: number) {
     const json = jsonSamples[index];
-  navigator.clipboard.writeText(json).then(() => {
-    console.log('Async: Copying to clipboard was successful!');
-    this._showCopyMsg();
-  }).catch(() => {
-    console.log('Async: Could not copy to the clipboard!')
-  })
-}
-  
+    navigator.clipboard
+      .writeText(json)
+      .then(() => {
+        console.log('Async: Copying to clipboard was successful!');
+        this._showCopyMsg();
+      })
+      .catch(() => {
+        console.log('Async: Could not copy to the clipboard!');
+      });
+  }
 }
