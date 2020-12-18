@@ -88,7 +88,7 @@ export const isUndefined = (val: any) => {
   return val === undefined;
 };
 
-export const getFirstValueFromobject = (key: string, arr: object[]) => {
+export const getFirstValueFromObject = (key: string, arr: object[]) => {
   for (const obj of arr) {
     if (isNotNullOrUndefined(obj[key])) return obj[key];
   }
