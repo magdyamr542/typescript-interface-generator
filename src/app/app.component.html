@@ -11,7 +11,6 @@
   <p>Please insert a valid Json!</p>
 </div>
 
-
 <div
   class="success-msg"
   [ngClass]="showCopyMsg ? 'copy-msg-show' : 'copy-msg-hide'"
@@ -19,26 +18,31 @@
   <p>Json Copied Successfully</p>
 </div>
 
-  <div class="jsonCopyConteiner">
-    <button class="btn btn-inline" (click)="_copyJsonToClipboard(0)"> json1</button>
-    <button class="btn btn-inline" (click)="_copyJsonToClipboard(1)"> json2</button>
-    <button class="btn btn-inline" (click)="_copyJsonToClipboard(2)" > json3</button>
+<div class="jsonCopyConteiner">
+  <button class="btn btn-inline" (click)="_copyJsonToClipboard(0)">
+    json1
+  </button>
+  <button class="btn btn-inline" (click)="_copyJsonToClipboard(1)">
+    json2
+  </button>
+  <button class="btn btn-inline" (click)="_copyJsonToClipboard(2)">
+    json3
+  </button>
 </div>
 
-  <!-- the input -->
-  <div class="input-section section">
-    <textarea
-      name="json_input"
-      cols="30"
-      rows="30"
-      placeholder="enter your json input here..."
-      #jsonInput
-    ></textarea>
-  </div>
+<!-- the input -->
+<div class="input-section section">
+  <textarea
+    name="json_input"
+    cols="30"
+    rows="10"
+    placeholder="enter your json input here..."
+    #jsonInput
+  ></textarea>
+</div>
 
 <!-- The main Grid -->
 <div class="grid">
-
   <!-- overview with coloring -->
   <div class="display-section section">
     <h2>JSON</h2>

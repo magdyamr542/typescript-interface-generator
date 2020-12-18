@@ -234,7 +234,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
     result += `export interface ${nameFromKey} { \n`;
     // body
     for (const child of this.childs) {
-      result += `${this._generateNameFromPriority(
+      result += ` ${this._generateNameFromPriority(
         child.key,
         child._required
       )} : ${child.overallTypeAsString}; \n`;

@@ -1,110 +1,111 @@
 /* You can add global styles to this file, and also import other style files */
 
 .title {
-    text-align: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 textarea {
-    display: block;
-    width: 100%;
-    height: 100%;
-    font-size: 24px;
-    padding: 0px;
-    margin: 0px   ;
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: 24px;
+  padding: 0px;
+  margin: 0px;
 }
-
 
 .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin: 0px 80px;
-    padding: 20px;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0px 80px;
+  padding: 20px;
+  grid-gap: 20px;
 }
 .section {
-    outline: 1px solid #ccc;
-    padding: 5px;
-     margin: 5px;
+  padding: 5px;
+  margin: 5px;
 }
 
-
-.input-section{
-    margin: 0px 200px;
+.input-section {
+  margin: 0px 200px;
 }
-
 
 pre {
-    padding-left: 30px;
-    font-size: 20px;
+  padding-left: 30px;
+  font-size: 20px;
 }
 
-.string {color: green;}
-.number { color: darkorange; }
-.boolean { color: blue; }
-.null { color: magenta; }
-.key { color: red; }
-
+.string {
+  color: green;
+}
+.number {
+  color: darkorange;
+}
+.boolean {
+  color: blue;
+}
+.null {
+  color: magenta;
+}
+.key {
+  color: red;
+}
 
 .btn {
-    text-transform: uppercase;    
-    padding: 20px;
-    border-radius: 10px;
-    display: block;
-    cursor: pointer;
-    font-size: 20px;
-    margin: auto;
-    border: 1px solid black;
-    background-color: white;
-    color: black;
-    }
+  text-transform: uppercase;
+  padding: 20px;
+  border-radius: 10px;
+  display: block;
+  cursor: pointer;
+  font-size: 20px;
+  margin: auto;
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+}
 
 .btn:hover {
-    background: #60a3bc;
-    color: white;
+  background: #60a3bc;
+  color: white;
 }
 
 .error-msg {
-    color: red;
-    margin: auto;
-    text-align: center;
-    font-size: 18px;
+  color: red;
+  margin: auto;
+  text-align: center;
+  font-size: 18px;
 }
 
-
 .success-msg {
-    color: green;
-    margin: auto;
-    text-align: center;
-    font-size: 18px;
+  color: green;
+  margin: auto;
+  text-align: center;
+  font-size: 18px;
 }
 
 .error-msg-show {
-display: block;
+  display: block;
 }
 
 .error-msg-hide {
-display: none;
+  display: none;
 }
 
-
 .copy-msg-show {
-    display: block;
-    }
-    
-    .copy-msg-hide {
-    display: none;
-    }
+  display: block;
+}
 
+.copy-msg-hide {
+  display: none;
+}
 
 .jsonCopyConteiner {
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-    }
-    
-    .btn-inline {
-        display: inline-block;
-        margin: 0px 50px;
-    }
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
 
+.btn-inline {
+  display: inline-block;
+  margin: 0px 50px;
+}

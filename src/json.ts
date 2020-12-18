@@ -81,40 +81,25 @@ const secondJson = `{"menu": {
 }}`;
 
 const thirdJson = `{
-  "problems": [{
-      "Diabetes":[{
-          "medications":[{
-              "medicationsClasses":[{
-                  "className":[{
-                      "associatedDrug":[{
-                          "name":"asprin",
-                          "dose":"",
-                          "strength":"500 mg"
-                      }],
-                      "associatedDrug#2":[{
-                          "name":"somethingElse",
-                          "dose":"",
-                          "strength":"500 mg"
-                      }]
-                  }],
-                  "className2":[{
-                      "associatedDrug":[{
-                          "name":"asprin",
-                          "dose":"",
-                          "strength":"500 mg"
-                      }],
-                      "associatedDrug#2":[{
-                          "name":"somethingElse",
-                          "dose":"",
-                          "strength":"500 mg"
-                      }]
-                  }]
-              }]
-          }],
-          "labs":[{
-              "missing_field": "missing_value"
-          }]
-      }],
-      "Asthma":[{}]
-  }]}`;
+  "glossary": {
+      "title": "example glossary",
+  "GlossDiv": {
+          "title": "S",
+    "GlossList": {
+              "GlossEntry": {
+                  "ID": "SGML",
+        "SortAs": "SGML",
+        "GlossTerm": "Standard Generalized Markup Language",
+        "Acronym": "SGML",
+        "Abbrev": "ISO 8879:1986",
+        "GlossDef": {
+                      "para": "A meta-markup language, used to create markup languages such as DocBook.",
+          "GlossSeeAlso": ["GML", "XML"]
+                  },
+        "GlossSee": "markup"
+              }
+          }
+      }
+  }
+}`;
 export const jsonSamples = [firstJson, secondJson, thirdJson];
