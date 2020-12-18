@@ -219,16 +219,12 @@ class InterfaceEntity implements InterfaceEntityInterface {
   /* recursive util to get the type definition from the current json object */
   getTypeDefinition() {
     const defs: string[] = [];
-    const names: Set<String> = new Set();
     this._getTypeDefinitionsArray(defs);
-    return defs.join('\n\n');
+    return defs.join('\n\n\n');
   }
 
   _generateNameFromPriority(key: string, required: boolean) {
-    let result = key;
-    if (result.indexOf(WHITE_SPACE) > -1) {
-      result = key.replace(WHITE_SPACE, '');
-    }
+    let result = key.trim();
     return required ? result : result + '?';
   }
 
@@ -236,7 +232,9 @@ class InterfaceEntity implements InterfaceEntityInterface {
     /* this is an object which is an interface */
     let result = '';
     const nameFromKey = this._generateTypeFromKeyHelper();
+    // head
     result += `export interface ${nameFromKey} { \n`;
+    // body
     for (const child of this.childs) {
       result += `${this._generateNameFromPriority(
         child.key,
@@ -247,6 +245,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
         child._getTypeDefinitionsArray(defs);
       }
     }
+    // tail
     result += '}';
     defs.push(result);
   }
@@ -257,9 +256,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
   providedIn: 'root',
 })
 export class InterfaceGeneratorService {
-  constructor() {
-    this.generateInterface(json);
-  }
+  constructor() {}
   generateInterface(jsonObj: object) {
     const root: InterfaceEntity = new InterfaceEntity('Root', jsonObj);
     const result = root.getTypeDefinition();
