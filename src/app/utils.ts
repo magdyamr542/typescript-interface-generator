@@ -72,7 +72,6 @@ export const extractArrayDepth = (arr: any[]) => {
   while (Array.isArray(current) && current.length > 0) {
     current = current[0];
     depth++;
-    console.log('here');
   }
   return depth;
 };

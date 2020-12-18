@@ -48,6 +48,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
   get overallTypeAsString() {
     let brackets = '';
     if (this.kind == Kind.ARRAY) {
+      brackets += this._depth === 0 ? '[]' : '';
       for (let i = 0; i < this._depth; i++) {
         brackets += '[]';
       }
