@@ -9,6 +9,7 @@ import {
   isNotNullOrUndefined,
   isObject,
   getFirstValueFromobject,
+  extractArrayDepth,
 } from './utils';
 
 /* TYPES DEFINITION */
@@ -43,9 +44,17 @@ class InterfaceEntity implements InterfaceEntityInterface {
   _overallTypeAsString: string; // the parent tells me what my name should be if my type is object
   _required: boolean;
   _entityContainer?: InterfaceEntity[];
+  _depth: number = 0;
+  _duplicate: number = 0;
 
   get overallTypeAsString() {
-    return this._overallTypeAsString;
+    let brackets = '';
+    if (this.kind == Kind.ARRAY) {
+      for (let i = 0; i < this._depth; i++) {
+        brackets += '[]';
+      }
+    }
+    return this._generateTypeFromKeyHelper() + brackets;
   }
 
   constructor(
@@ -60,16 +69,26 @@ class InterfaceEntity implements InterfaceEntityInterface {
     this.value = value;
     this.childs = []; // if iam an object then i would have childs that will be generated in the build up proccess
     /* generate the type of this prop if it is simple */
-    this._setKind(value);
+    this._setConfig(value);
+    this._checkForDuplicates(key);
     this._overallTypeAsString = this._generateOverallTypeAsString(value);
     this._processObject(key, value);
     this._entityContainer.push(this);
   }
 
+  /* Checking if the name is a duplicate */
+  private _checkForDuplicates(key: string) {
+    const sameEntities = this._entityContainer.filter(
+      (entity) => entity.key === key
+    );
+    this._duplicate = sameEntities.length;
+  }
+
   /* set the kind of the object which will help later decide which type it should have */
-  private _setKind(value: ValueTypes) {
+  private _setConfig(value: ValueTypes) {
     if (Array.isArray(value)) {
       this.kind = Kind.ARRAY;
+      this._depth = extractArrayDepth(value);
     } else if (isObject(value)) {
       this.kind = Kind.OBJECT;
     } else {
@@ -144,7 +163,6 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   /* getting the required and optional props from an array of objects */
   private _getRequiredAndOptionalProps(objArr: object[]) {
-    const length = objArr.length;
     const keyMap: { [key: string]: number } = {};
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < objArr.length; i++) {
@@ -168,18 +186,15 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   /* recursive util to generate the overall type of the object */
   private _generateOverallTypeAsString(value: ValueTypes): string {
-    let initOverallTypeAsString = this._generateInitialOverallTypeAsString(
-      value
-    );
-    return initOverallTypeAsString;
+    return this._generateInitialOverallTypeAsString(value);
   }
 
   _generateInitialOverallTypeAsString(value: ValueTypes) {
     if (value === null) return 'null';
     if (isArray(value)) {
-      if (isEmptyArray(value as any[])) return 'any[]';
-      const firstItem = value[0];
-      return this._generateInitialOverallTypeAsString(firstItem) + '[]';
+      if (isEmptyArray(value as any[])) return 'any';
+      const firstItem = extractFirstArrayMember(value as any[]);
+      return this._generateInitialOverallTypeAsString(firstItem);
     } else if (isObject(value)) {
       return this._generateTypeNameFromKey(this.key);
     } else {
@@ -187,26 +202,25 @@ class InterfaceEntity implements InterfaceEntityInterface {
     }
   }
 
-  private _generateTypeFromKeyHelper(usedNames: Set<String>) {
-    let type = this.overallTypeAsString.replace(/[\[\]']+/g, '');
-    let freq = 0;
-    usedNames.forEach((name) => {
-      if (type === name.replace(/[\[\]']+/g, '')) freq++;
-    });
-    if (freq === 0) return type;
-    return type + freq;
+  private _generateTypeFromKeyHelper() {
+    if (this.kind === Kind.OBJECT) {
+      const sequence = this._duplicate === 0 ? '' : this._duplicate;
+      return this._overallTypeAsString + sequence;
+    } else {
+      return this._overallTypeAsString;
+    }
   }
 
   private _generateTypeNameFromKey(key: string): string {
     // make sure that the name is unique
-    return key.charAt(0).toUpperCase() + key.substring(1) + 'Interface';
+    return key.charAt(0).toUpperCase() + key.substring(1);
   }
 
   /* recursive util to get the type definition from the current json object */
   getTypeDefinition() {
     const defs: string[] = [];
     const names: Set<String> = new Set();
-    this._getTypeDefinitionsArray(defs, names);
+    this._getTypeDefinitionsArray(defs);
     return defs.join('\n\n');
   }
 
@@ -218,14 +232,10 @@ class InterfaceEntity implements InterfaceEntityInterface {
     return required ? result : result + '?';
   }
 
-  private async _getTypeDefinitionsArray(
-    defs: string[],
-    usedNames: Set<String>
-  ) {
+  private async _getTypeDefinitionsArray(defs: string[]) {
     /* this is an object which is an interface */
     let result = '';
-    const nameFromKey = this._generateTypeFromKeyHelper(usedNames);
-    usedNames.add(nameFromKey);
+    const nameFromKey = this._generateTypeFromKeyHelper();
     result += `export interface ${nameFromKey} { \n`;
     for (const child of this.childs) {
       result += `${this._generateNameFromPriority(
@@ -234,7 +244,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
       )} : ${child.overallTypeAsString}; \n`;
       /* append new defs because we have a new interface */
       if (child.childs.length !== 0 || child.kind === Kind.OBJECT) {
-        child._getTypeDefinitionsArray(defs, usedNames);
+        child._getTypeDefinitionsArray(defs);
       }
     }
     result += '}';

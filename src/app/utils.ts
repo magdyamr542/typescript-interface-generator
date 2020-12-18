@@ -66,6 +66,17 @@ export const extractFirstArrayMember = (value: any[]): any | null => {
   return value as any;
 };
 
+export const extractArrayDepth = (arr: any[]) => {
+  let depth = 0;
+  let current = arr;
+  while (Array.isArray(current) && current.length > 0) {
+    current = current[0];
+    depth++;
+    console.log('here');
+  }
+  return depth;
+};
+
 export const isNotNullOrUndefined = (val: any) => {
   return !isNull(val) && !isUndefined(val);
 };
