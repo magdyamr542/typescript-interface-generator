@@ -43,7 +43,7 @@ export const isArray = (val: any) => {
 };
 
 export const isObject = (val: any) => {
-  return typeof val === 'object' && val !== null;
+  return val !== null && typeof val === 'object' && !isArray(val);
 };
 
 export const isEmptyObject = (val: object) => {

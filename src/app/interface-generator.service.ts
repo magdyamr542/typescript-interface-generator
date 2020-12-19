@@ -80,8 +80,9 @@ class InterfaceEntity implements InterfaceEntityInterface {
   /* Checking if the name is a duplicate */
   private _checkForDuplicates(key: string) {
     const sameEntities = this._getRoot()._entityContainer.filter(
-      (entity) => entity.key === key
+      (entity) => entity.key === key && entity !== this
     );
+
     this._duplicate = sameEntities.length;
   }
 

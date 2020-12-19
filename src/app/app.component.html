@@ -8,14 +8,14 @@
   class="error-msg"
   [ngClass]="showErrorMsg ? 'error-msg-show' : 'error-msg-hide'"
 >
-  <p>Please insert a valid Json!</p>
+  <p>{{ this.errorMsg }}</p>
 </div>
 
 <div
   class="success-msg"
-  [ngClass]="showCopyMsg ? 'copy-msg-show' : 'copy-msg-hide'"
+  [ngClass]="showSuccessMsg ? 'copy-msg-show' : 'copy-msg-hide'"
 >
-  <p>Json Copied Successfully</p>
+  <p>{{ this.successMsg }}</p>
 </div>
 
 <div class="jsonCopyConteiner">
@@ -53,6 +53,13 @@
   <div class="output-section section">
     <h2>Interface</h2>
     <pre class="json-pre">{{ interface }}</pre>
+    <button
+      class="btn btn-copy-result"
+      *ngIf="this.canCopyInterface"
+      (click)="this.onInterfaceCopy.emit(this.interface)"
+    >
+      Copy Interface
+    </button>
   </div>
 </div>
 
