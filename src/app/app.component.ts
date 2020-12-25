@@ -13,6 +13,24 @@ export class AppComponent {
   constructor(
     private readonly interfaceGeneratorService: InterfaceGeneratorService
   ) {
+    this.initSubscribers();
+  }
+  title = 'angular';
+  json = 'empty...';
+  interface = 'empty...';
+  // notifiers
+  showErrorMsg = false;
+  showSuccessMsg = false;
+  successMsg = '';
+  errorMsg = '';
+  canCopyInterface = false;
+  // inteface generator config
+  enableOptionalProps = true;
+  @ViewChild('jsonInput') jsonInput;
+  onTextCopy: EventEmitter<string> = new EventEmitter();
+  onInterfaceCopy: EventEmitter<string> = new EventEmitter();
+
+  initSubscribers() {
     // copy the json into the text area
     this.onTextCopy.subscribe((text) => this._insertTextToTextArea(text));
     // copy the interface result in the clipboard
@@ -21,18 +39,6 @@ export class AppComponent {
       this._showSuccessMsg('Interface Copied Successfully');
     });
   }
-  title = 'angular';
-  json = 'empty...';
-  showErrorMsg = false;
-  showSuccessMsg = false;
-  successMsg = '';
-  errorMsg = '';
-  canCopyInterface = false;
-  interface = 'empty...';
-  @ViewChild('jsonInput') jsonInput;
-  onTextCopy: EventEmitter<string> = new EventEmitter();
-  onInterfaceCopy: EventEmitter<string> = new EventEmitter();
-
   generateInterface() {
     const textArea = this.jsonInput.nativeElement as HTMLTextAreaElement;
     const jsonString: string = textArea.value;
@@ -44,7 +50,8 @@ export class AppComponent {
       textArea.value = JSON.stringify(jsonParsed, null, 2);
       // compute and show the interfaces
       this.interface = this.interfaceGeneratorService.generateInterface(
-        jsonParsed
+        jsonParsed,
+        this.enableOptionalProps
       );
       this._showSuccessMsg('Interface was generated successfully');
       this.canCopyInterface = true;

@@ -3,6 +3,15 @@
   <button class="btn" (click)="generateInterface()">Generate Interface</button>
 </div>
 
+<div class="optionalPropsContainer">
+  <label for="enableOptionalProps">Enable Required and optional props</label>
+  <input
+    type="checkbox"
+    name="enableOptionalProps"
+    id="enableOptionalProps"
+    [(ngModel)]="enableOptionalProps"
+  />
+</div>
 <!-- Display an error if failed to parse the json -->
 <div
   class="error-msg"

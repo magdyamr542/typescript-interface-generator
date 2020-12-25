@@ -47,14 +47,20 @@ class InterfaceEntity implements InterfaceEntityInterface {
   _entityContainer?: InterfaceEntity[];
   _depth: number = 0;
   _duplicate: number = 0;
+  _enableRequiredAndOptionalProps?;
 
   constructor(
     key: string,
     value: ValueTypes,
     parent: InterfaceEntity,
-    required?: boolean
+    required?: boolean,
+    enableRequiredAndOptionalProps?: boolean
   ) {
     this._required = required === undefined ? true : required;
+    this._enableRequiredAndOptionalProps =
+      enableRequiredAndOptionalProps === undefined
+        ? true
+        : enableRequiredAndOptionalProps;
     this.key = key;
     this.value = value;
     this.childs = []; // if iam an object then i would have childs that will be generated in the build up proccess
@@ -75,6 +81,11 @@ class InterfaceEntity implements InterfaceEntityInterface {
       }
     }
     return this._generateTypeFromKeyHelper() + brackets;
+  }
+
+  get enableRequiredAndOptionalProps() {
+    if (this._isRoot()) return this._enableRequiredAndOptionalProps;
+    return this._getRoot().enableRequiredAndOptionalProps;
   }
 
   /* Checking if the name is a duplicate */
@@ -122,23 +133,31 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   // processing the object and generating the child of the current key value pair
   private _processObject(value: ValueTypes) {
+    let childs: InterfaceEntity[];
     if (this.kind === Kind.OBJECT) {
-      const childs = this._generateChildsFromObject(value as object);
+      childs = this._generateChildsFromObject(value as object);
       this.childs.push(...childs);
     } else if (this.kind === Kind.ARRAY) {
       if (isEmptyArray(value as any[])) return;
       const firstItem = extractFirstArrayMember(value as any[]);
       if (isObject(firstItem)) {
+        if (!this.enableRequiredAndOptionalProps) {
+          // not supporting optional props
+          childs = this._generateChildsFromObject(firstItem);
+          this.childs.push(...childs);
+          return;
+        }
+        // supporting optional props
         const arrayWithObjects = extractFirstArray(value as any[]);
         // loop throw the array of objects and detect the required and the optional props
         const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
           arrayWithObjects as object[]
         );
-        const obj = this._getRequiredAndOptionalPropsAsJsobObject(
+        const requiredAndOptionalPropsAsJson = this._getRequiredAndOptionalPropsAsJsobObject(
           requiredAndOptionalProps
         );
-        const childs = this._generateChildsFromObject(
-          obj,
+        childs = this._generateChildsFromObject(
+          requiredAndOptionalPropsAsJson,
           requiredAndOptionalProps
         );
         this.childs.push(...childs);
@@ -272,10 +291,22 @@ class InterfaceEntity implements InterfaceEntityInterface {
 })
 export class InterfaceGeneratorService {
   constructor() {}
-  generateInterface(jsonObj: object) {
-    const root: InterfaceEntity = new InterfaceEntity(ROOT, jsonObj, null);
+  generateInterface(jsonObj: object, enableOptionalProps?: boolean) {
+    // basic config
+    const parent = null;
+    const rootRequired = true;
+    const enableRequiredAndOptionalProps =
+      enableOptionalProps === undefined ? true : enableOptionalProps;
+    // generate interface
+    const root: InterfaceEntity = new InterfaceEntity(
+      ROOT,
+      jsonObj,
+      parent,
+      rootRequired,
+      enableRequiredAndOptionalProps
+    );
+    // get type definitions
     const result = root.getTypeDefinition();
-    console.log(root);
     return result;
   }
 }
