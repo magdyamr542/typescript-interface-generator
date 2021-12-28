@@ -1,75 +1,53 @@
 <h1 class="title">Interface Generator</h1>
 <div class="button-container">
-  <button class="btn" (click)="generateInterface()">Generate Interface</button>
+	<button class="btn" (click)="generateInterface()">Generate Interface</button>
 </div>
 
 <div class="optionalPropsContainer">
-  <label for="enableOptionalProps">Enable Required and optional props</label>
-  <input
-    type="checkbox"
-    name="enableOptionalProps"
-    id="enableOptionalProps"
-    [(ngModel)]="enableOptionalProps"
-  />
+	<label for="enableOptionalProps">Enable Required and optional props</label>
+	<input type="checkbox" name="enableOptionalProps" id="enableOptionalProps" [(ngModel)]="enableOptionalProps" />
 </div>
 <!-- Display an error if failed to parse the json -->
-<div
-  class="error-msg"
-  [ngClass]="showErrorMsg ? 'error-msg-show' : 'error-msg-hide'"
->
-  <p>{{ this.errorMsg }}</p>
+<div class="error-msg" [ngClass]="showErrorMsg ? 'error-msg-show' : 'error-msg-hide'">
+	<p>{{ this.errorMsg }}</p>
 </div>
 
-<div
-  class="success-msg"
-  [ngClass]="showSuccessMsg ? 'copy-msg-show' : 'copy-msg-hide'"
->
-  <p>{{ this.successMsg }}</p>
+<div class="success-msg" [ngClass]="showSuccessMsg ? 'copy-msg-show' : 'copy-msg-hide'">
+	<p>{{ this.successMsg }}</p>
 </div>
 
 <div class="jsonCopyConteiner">
-  <button class="btn btn-inline" (click)="_copyJsonToClipboard(0)">
-    json1
-  </button>
-  <button class="btn btn-inline" (click)="_copyJsonToClipboard(1)">
-    json2
-  </button>
-  <button class="btn btn-inline" (click)="_copyJsonToClipboard(2)">
-    json3
-  </button>
+	<button class="btn btn-inline" (click)="_copyJsonToClipboard(0)">
+		json1
+	</button>
+	<button class="btn btn-inline" (click)="_copyJsonToClipboard(1)">
+		json2
+	</button>
+	<button class="btn btn-inline" (click)="_copyJsonToClipboard(2)">
+		json3
+	</button>
 </div>
 
 <!-- the input -->
 <div class="input-section section">
-  <textarea
-    name="json_input"
-    cols="30"
-    rows="10"
-    placeholder="enter your json input here..."
-    #jsonInput
-  ></textarea>
+	<textarea name="json_input" cols="30" rows="10" placeholder="enter your json input here..." #jsonInput></textarea>
 </div>
 
 <!-- The main Grid -->
 <div class="grid">
-  <!-- overview with coloring -->
-  <div class="display-section section">
-    <h2>JSON</h2>
-    <pre class="json-pre" [innerHTML]="json"></pre>
-  </div>
+	<!-- overview with coloring -->
+	<div class="display-section section">
+		<h2>JSON</h2>
+		<pre class="json-pre" [innerHTML]="json"></pre>
+	</div>
 
-  <!-- interface output -->
-  <div class="output-section section">
-    <h2>Interface</h2>
-    <pre class="json-pre">{{ interface }}</pre>
-    <button
-      class="btn btn-copy-result"
-      *ngIf="this.canCopyInterface"
-      (click)="this.onInterfaceCopy.emit(this.interface)"
-    >
-      Copy Interface
-    </button>
-  </div>
+	<!-- interface output -->
+	<div class="output-section section">
+		<h2>Interface</h2>
+		<pre class="json-pre">{{ interface }}</pre>
+		<button class="btn btn-copy-result" *ngIf="this.canCopyInterface"
+			(click)="this.onInterfaceCopy.emit(this.interface)">
+			Copy Interface
+		</button>
+	</div>
 </div>
-
-<router-outlet></router-outlet>
