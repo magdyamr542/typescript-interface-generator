@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-import { ROOT } from './consts';
 import {
   extractFirstArray,
   extractFirstArrayMember,
@@ -9,7 +7,10 @@ import {
   isObject,
   getFirstValueFromObject,
   extractArrayDepth,
-} from './utils';
+} from "./utils";
+
+export const ROOT = "Root";
+export const MSG_TIMEOUT_MS = 2000;
 
 /* TYPES DEFINITION */
 type LimitedJsonValueTypes = string | number | boolean;
@@ -39,20 +40,20 @@ interface RequiredOrOptionalPropsInterface {
 class InterfaceEntity implements InterfaceEntityInterface {
   key: string; // the key in the json
   value: ValueTypes; // the value which corrsponds to some key
-  kind: Kind;
-  childs?: InterfaceEntity[];
+  kind: Kind = Kind.OBJECT;
+  childs: InterfaceEntity[] = [];
   _parent: InterfaceEntity | null = null;
   _overallTypeAsString: string; // the parent tells me what my name should be if my type is object
   _required: boolean;
-  _entityContainer?: InterfaceEntity[];
+  _entityContainer: InterfaceEntity[] = [];
   _depth: number = 0;
   _duplicate: number = 0;
-  _enableRequiredAndOptionalProps?;
+  _enableRequiredAndOptionalProps: boolean;
 
   constructor(
     key: string,
     value: ValueTypes,
-    parent: InterfaceEntity,
+    parent: InterfaceEntity | null,
     required?: boolean,
     enableRequiredAndOptionalProps?: boolean
   ) {
@@ -73,17 +74,17 @@ class InterfaceEntity implements InterfaceEntityInterface {
   }
 
   get overallTypeAsString() {
-    let brackets = '';
-    if (this.kind == Kind.ARRAY) {
-      brackets += this._depth === 0 ? '[]' : '';
+    let brackets = "";
+    if (this.kind === Kind.ARRAY) {
+      brackets += this._depth === 0 ? "[]" : "";
       for (let i = 0; i < this._depth; i++) {
-        brackets += '[]';
+        brackets += "[]";
       }
     }
     return this._generateTypeFromKeyHelper() + brackets;
   }
 
-  get enableRequiredAndOptionalProps() {
+  get enableRequiredAndOptionalProps(): boolean {
     if (this._isRoot()) return this._enableRequiredAndOptionalProps;
     return this._getRoot().enableRequiredAndOptionalProps;
   }
@@ -128,7 +129,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
   }
 
   private _isRoot() {
-    return this.key === 'Root';
+    return this.key === "Root";
   }
 
   // processing the object and generating the child of the current key value pair
@@ -151,11 +152,12 @@ class InterfaceEntity implements InterfaceEntityInterface {
         const arrayWithObjects = extractFirstArray(value as any[]);
         // loop throw the array of objects and detect the required and the optional props
         const requiredAndOptionalProps = this._getRequiredAndOptionalProps(
-          arrayWithObjects as object[]
+          arrayWithObjects as Record<string, unknown>[]
         );
-        const requiredAndOptionalPropsAsJson = this._getRequiredAndOptionalPropsAsJsobObject(
-          requiredAndOptionalProps
-        );
+        const requiredAndOptionalPropsAsJson =
+          this._getRequiredAndOptionalPropsAsJsobObject(
+            requiredAndOptionalProps
+          );
         childs = this._generateChildsFromObject(
           requiredAndOptionalPropsAsJson,
           requiredAndOptionalProps
@@ -200,7 +202,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
   }
 
   /* getting the required and optional props from an array of objects */
-  private _getRequiredAndOptionalProps(objArr: object[]) {
+  private _getRequiredAndOptionalProps(objArr: Record<string, unknown>[]) {
     const keyMap: { [key: string]: number } = {}; // map each key to the number of its occurance
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < objArr.length; i++) {
@@ -224,11 +226,11 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   /* recursive util to generate the overall type of the object */
   private _generateOverallTypeAsString(value: ValueTypes): string {
-    if (value === null) return 'null';
+    if (value === null) return "null";
     else if (isObject(value)) {
       return this._generateTypeNameFromKey(this.key);
     } else if (isArray(value)) {
-      if (isEmptyArray(value as any[])) return 'any';
+      if (isEmptyArray(value as any[])) return "any";
       const firstItem = extractFirstArrayMember(value as any[]);
       return this._generateOverallTypeAsString(firstItem);
     } else {
@@ -238,7 +240,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   private _generateTypeFromKeyHelper() {
     if (this.kind === Kind.OBJECT) {
-      const sequence = this._duplicate === 0 ? '' : this._duplicate;
+      const sequence = this._duplicate === 0 ? "" : this._duplicate;
       return this._overallTypeAsString + sequence; // used to avoid the same keys being used as interface names
     } else {
       return this._overallTypeAsString;
@@ -252,12 +254,12 @@ class InterfaceEntity implements InterfaceEntityInterface {
 
   _generateNameFromPriority(key: string, required: boolean) {
     let result = key.trim();
-    return required ? result : result + '?';
+    return required ? result : result + "?";
   }
 
   private async _getTypeDefinitionsArray(defs: string[]) {
     /* this is an object which is an interface */
-    let result = '';
+    let result = "";
     const interfaceName = this._generateTypeFromKeyHelper();
     // head
     result += `export interface ${interfaceName} { \n`;
@@ -273,7 +275,7 @@ class InterfaceEntity implements InterfaceEntityInterface {
       }
     }
     // tail
-    result += '}';
+    result += "}";
     defs.push(result);
   }
 
@@ -281,32 +283,28 @@ class InterfaceEntity implements InterfaceEntityInterface {
   public getTypeDefinition() {
     const defs: string[] = [];
     this._getTypeDefinitionsArray(defs);
-    return defs.join('\n\n\n');
+    return defs.reverse().join("\n\n\n");
   }
 }
 
-// tslint:disable-next-line: max-classes-per-file
-@Injectable({
-  providedIn: 'root',
-})
-export class InterfaceGeneratorService {
-  constructor() {}
-  generateInterface(jsonObj: object, enableOptionalProps?: boolean) {
-    // basic config
-    const parent = null;
-    const rootRequired = true;
-    const enableRequiredAndOptionalProps =
-      enableOptionalProps === undefined ? true : enableOptionalProps;
-    // generate interface
-    const root: InterfaceEntity = new InterfaceEntity(
-      ROOT,
-      jsonObj,
-      parent,
-      rootRequired,
-      enableRequiredAndOptionalProps
-    );
-    // get type definitions
-    const result = root.getTypeDefinition();
-    return result;
-  }
-}
+export const generateInterfaceDefinition = (
+  jsonObj: object,
+  enableOptionalProps?: boolean
+): string => {
+  // basic config
+  const parent = null;
+  const rootRequired = true;
+  const enableRequiredAndOptionalProps =
+    enableOptionalProps === undefined ? true : enableOptionalProps;
+  // generate interface
+  const root: InterfaceEntity = new InterfaceEntity(
+    ROOT,
+    jsonObj,
+    parent,
+    rootRequired,
+    enableRequiredAndOptionalProps
+  );
+  // get type definitions
+  const result = root.getTypeDefinition();
+  return result;
+};

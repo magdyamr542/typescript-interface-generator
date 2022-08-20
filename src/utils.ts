@@ -1,7 +1,7 @@
 export const generateRandomName = (): string => {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
+  const chars = "abcdefghijklmnopqrstuvwxyz";
   const length = 10;
-  let result = '';
+  let result = "";
   for (let i = 0; i < length; i++) {
     const index = Math.floor(Math.random() * chars.length);
     result += chars[index];
@@ -9,29 +9,8 @@ export const generateRandomName = (): string => {
   return result;
 };
 
-export const generateRandomNumber = (max): number => {
+export const generateRandomNumber = (max: number): number => {
   return Math.floor(Math.random() * max);
-};
-
-export const generateRandomAbilities = (): string[] => {
-  const abilities = [
-    'fly',
-    'eat',
-    'die',
-    'fire',
-    'drive',
-    'swim',
-    'breathe',
-    'learn',
-    'drive',
-    'act',
-  ];
-  const numAbilities = generateRandomNumber(6);
-  const result = [];
-  for (let i = 0; i < numAbilities; i++) {
-    result.push(abilities[generateRandomNumber(abilities.length)]);
-  }
-  return result;
 };
 
 export const isEmptyArray = (arr: any[]) => {
@@ -43,7 +22,7 @@ export const isArray = (val: any) => {
 };
 
 export const isObject = (val: any) => {
-  return val !== null && typeof val === 'object' && !isArray(val);
+  return val !== null && typeof val === "object" && !isArray(val);
 };
 
 export const isEmptyObject = (val: object) => {
@@ -88,39 +67,42 @@ export const isUndefined = (val: any) => {
   return val === undefined;
 };
 
-export const getFirstValueFromObject = (key: string, arr: object[]) => {
+export const getFirstValueFromObject = (
+  key: string,
+  arr: Record<string, unknown>[]
+): null | undefined | unknown => {
   for (const obj of arr) {
     if (isNotNullOrUndefined(obj[key])) return obj[key];
   }
   for (const obj of arr) {
     if (isNull(obj[key])) return null;
     // tslint:disable-next-line: no-unused-expression
-    else if (isUndefined(obj[key])) undefined;
+    else if (isUndefined(obj[key])) return undefined;
   }
 };
 
 /* util function from stackoverflow to color the json object */
 export const syntaxHighlight = (json: string) => {
   json = json
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
   return json.replace(
-    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
     (match) => {
-      let cls = 'number';
+      let cls = "number";
       if (/^"/.test(match)) {
         if (/:$/.test(match)) {
-          cls = 'key';
+          cls = "key";
         } else {
-          cls = 'string';
+          cls = "string";
         }
       } else if (/true|false/.test(match)) {
-        cls = 'boolean';
+        cls = "boolean";
       } else if (/null/.test(match)) {
-        cls = 'null';
+        cls = "null";
       }
-      return '<span class="' + cls + '">' + match + '</span>';
+      return '<span class="' + cls + '">' + match + "</span>";
     }
   );
 };
